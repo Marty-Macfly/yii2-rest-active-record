@@ -27,7 +27,7 @@ class ActiveRecord extends BaseActiveRecord
     public function init()
     {
         parent::init();
-        $this->connect = new Connection(get_called_class());
+        $this->connect = self::getDb();
     }
 
 
@@ -158,7 +158,11 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function getDb()
     {
-        return null;
+        /* @var $rest Connection */
+        $rest = Yii::$app->get('rest');
+        $rest->modelClass = get_called_class();
+
+        return $rest;
     }
 
     /**
@@ -176,7 +180,7 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function updateAll($attributes, $condition = '')
     {
-        $connect = new Connection(get_called_class());
+        $connect = static::getDb();
         return $connect->updateAll($attributes, $condition);
     }
 
@@ -196,7 +200,7 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function updateAllCounters($counters, $condition = '')
     {
-        $connect = new Connection(get_called_class());
+        $connect = static::getDb();
         return $connect->updateAllCounters($counters, $condition);
     }
 
@@ -217,7 +221,7 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function deleteAll($condition = '', $params = [])
     {
-        $connect = new Connection(get_called_class());
+        $connect = static::getDb();
         return $connect->deleteAll($condition, $params);
     }
 

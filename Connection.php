@@ -10,31 +10,19 @@ namespace pavle\yii2\rest;
 
 use Curl\Curl;
 use yii\base\Component;
+use yii\base\ErrorException;
 use yii\helpers\ArrayHelper;
 
 class Connection extends Component
 {
-    public $map = [
-        'pavle\yii2\rest\test\Fans' => [
-            'lists' => 'http://baseapi.chexiu-local.cn/fans/lists',
-            'create' => 'http://baseapi.chexiu-local.cn/fans/create',
-            'update' => 'http://baseapi.chexiu-local.cn/fans/update-all',
-            'count' => 'http://baseapi.chexiu-local.cn/fans/count',
-        ],
-        'pavle\yii2\rest\test\Store' => [
-            'lists' => 'http://baseapi.chexiu-local.cn/store/lists',
-            'create' => 'http://baseapi.chexiu-local.cn/store/create',
-            'update' => 'http://baseapi.chexiu-local.cn/store/update',
-            'count' => 'http://baseapi.chexiu-local.cn/store/count',
-        ],
-        'pavle\yii2\rest\test\Pay' => [
-            'lists' => 'http://baseapi.chexiu-local.cn/pay/lists',
-            'create' => 'http://baseapi.chexiu-local.cn/pay/create',
-            'update' => 'http://baseapi.chexiu-local.cn/pay/update',
-            'count' => 'http://baseapi.chexiu-local.cn/pay/count',
-        ],
-    ];
+    /**
+     * @var array
+     */
+    public $map;
 
+    /**
+     * @var string
+     */
     public $modelClass;
 
     /**
@@ -42,15 +30,31 @@ class Connection extends Component
      */
     protected $curl;
 
-    public function __construct($modelClass, $config = [])
+    /**
+     * @var callable
+     */
+    public $success;
+
+    /**
+     * @var callable
+     */
+    public $error;
+
+    public function init()
     {
-        parent::__construct($config);
-        $this->modelClass = $modelClass;
+        parent::init();
         $this->curl = new Curl();
-        $this->curl->success(function (Curl $curl) {
+        !$this->success && $this->success = function (Curl $curl) {
             $curl->response = ArrayHelper::toArray($curl->response);
-        });
+        };
+        !$this->error && $this->error = function (Curl $curl) {
+            \Yii::trace(serialize($curl->response), 'rest.connect');
+            throw new ErrorException($curl->errorMessage);
+        };
+        $this->curl->success($this->success);
+        $this->curl->error($this->error);
     }
+
 
     /**
      * @param ActiveQuery $query
@@ -80,7 +84,8 @@ class Connection extends Component
      */
     public function exists(ActiveQuery $query)
     {
-        return true;
+        $result = $this->curl->get($this->getUrl($this->modelClass, 'count'), ['where' => $query->where]);
+        return $result ? true : false;
     }
 
     /**
@@ -95,7 +100,7 @@ class Connection extends Component
 
     public function deleteAll($condition, $params)
     {
-        return true;
+        return $this->curl->delete($this->getUrl($this->modelClass, 'delete'), $condition);
     }
 
     /**

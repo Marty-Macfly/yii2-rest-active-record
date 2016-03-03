@@ -1,7 +1,6 @@
 <?php
 
 namespace pavle\yii2\rest;
-
 use yii\base\Component;
 use yii\db\ActiveQueryInterface;
 use yii\db\ActiveQueryTrait;
@@ -30,8 +29,9 @@ class ActiveQuery extends Component implements ActiveQueryInterface
     public function __construct($modelClass, $config = [])
     {
         parent::__construct($config);
+        /* @var $modelClass ActiveRecord */
         $this->modelClass = $modelClass;
-        $this->connect = new Connection($modelClass);
+        $this->connect = $modelClass::getDb();
     }
 
     /**
