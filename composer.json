@@ -1,6 +1,6 @@
 {
-    "name": "pavle/yii2-rest-active-record",
-    "description": "Yii2 Rest Active Record",
+    "name": "pavle/yii2-rest-active",
+    "description": "Rest Active Record",
     "type": "yii2-extension",
     "keywords": ["yii2","extension"],
     "license": "MIT",

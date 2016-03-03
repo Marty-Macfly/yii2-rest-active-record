@@ -18,7 +18,7 @@ class Connection extends Component
         'pavle\yii2\rest\test\Fans' => [
             'lists' => 'http://baseapi.chexiu-local.cn/fans/lists',
             'create' => 'http://baseapi.chexiu-local.cn/fans/create',
-            'update' => 'http://baseapi.chexiu-local.cn/fans/update',
+            'update' => 'http://baseapi.chexiu-local.cn/fans/update-all',
             'count' => 'http://baseapi.chexiu-local.cn/fans/count',
         ],
         'pavle\yii2\rest\test\Store' => [
@@ -47,6 +47,9 @@ class Connection extends Component
         parent::__construct($config);
         $this->modelClass = $modelClass;
         $this->curl = new Curl();
+        $this->curl->success(function (Curl $curl) {
+            $curl->response = ArrayHelper::toArray($curl->response);
+        });
     }
 
     /**
@@ -90,11 +93,6 @@ class Connection extends Component
         return $this->curl->put($this->getUrl($this->modelClass, 'update') . '?' . http_build_query($condition), $attributes);
     }
 
-    /**
-     * @param $condition
-     * @param $params
-     * @return bool
-     */
     public function deleteAll($condition, $params)
     {
         return true;

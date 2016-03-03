@@ -126,7 +126,30 @@ class ActiveRecord extends BaseActiveRecord
      */
     public function insert($runValidation = true, $attributes = null)
     {
-        return $this->connect->create($attributes);
+        if ($runValidation && !$this->validate($attributes)) {
+            Yii::info('Model not inserted due to validation error.', __METHOD__);
+            return false;
+        }
+
+        if (!$this->beforeSave(true)) {
+            return false;
+        }
+
+        $values = $this->getDirtyAttributes($attributes);
+        if (($data = $this->connect->create($values)) === false) {
+            return false;
+        }
+
+        foreach ($data as $name => $value) {
+            $this->setAttribute($name, $value);
+            $values[$name] = $value;
+        }
+
+        $changedAttributes = array_fill_keys(array_keys($values), null);
+        $this->setOldAttributes($values);
+        $this->afterSave(true, $changedAttributes);
+
+        return true;
     }
 
     /**
