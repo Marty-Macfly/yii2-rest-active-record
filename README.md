@@ -28,7 +28,7 @@ php composer.phar require --prefer-dist pavle/yii2-rest-active "*"
 1、继承pavle\yii2\rest\ActiveRecord，添加attributes
 
 ```php
-class Fans extends pavle\yii2\rest\ActiveRecord
+class Fans extends ActiveRecord
 {
     public function attributes()
     {
@@ -69,7 +69,8 @@ class Fans extends pavle\yii2\rest\ActiveRecord
     /**
      * @return \pavle\yii2\rest\ActiveQuery
      */
-    public function getStore(){
+    public function getStore()
+    {
         return $this->hasOne(Store::className(), ['store_id' => 'store_id']);
     }
 }
