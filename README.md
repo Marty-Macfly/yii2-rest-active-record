@@ -2,27 +2,27 @@ Rest Active Record
 ==================
 一个基于restful api模型资源的ActiveRecord方案
 
-Installation
+安装
 ------------
 
-The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
+安装此扩展的首选方式是通过 [composer](http://getcomposer.org/download/).
 
-Either run
+任一运行
 
 ```
 php composer.phar require --prefer-dist pavle/yii2-rest-active "*"
 ```
 
-or add
+或者添加
 
 ```
 "pavle/yii2-rest-active": "*"
 ```
 
-to the require section of your `composer.json` file.
+到您的 `composer.json` 文件.
 
 
-Usage
+用法
 -----
 
 1、继承pavle\yii2\rest\ActiveRecord，添加attributes
