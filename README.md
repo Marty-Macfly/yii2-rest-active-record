@@ -25,7 +25,7 @@ to the require section of your `composer.json` file.
 Usage
 -----
 
-Once the extension is installed, simply use it in your code by  :
+1、继承pavle\yii2\rest\ActiveRecord，添加attributes
 
 ```php
 class Fans extends pavle\yii2\rest\ActiveRecord
