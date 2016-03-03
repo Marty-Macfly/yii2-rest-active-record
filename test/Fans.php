@@ -51,7 +51,8 @@ class Fans extends ActiveRecord
     /**
      * @return \pavle\yii2\rest\ActiveQuery
      */
-    public function getStore(){
+    public function getStore()
+    {
         return $this->hasOne(Store::className(), ['store_id' => 'store_id']);
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
 namespace pavle\yii2\rest;
+
 use yii\base\Component;
 use yii\db\ActiveQueryInterface;
 use yii\db\ActiveQueryTrait;
 use yii\db\ActiveRelationTrait;
-use pavle\yii2\rest\Connection;
 use yii\db\QueryTrait;
 
 /**

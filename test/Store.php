@@ -35,7 +35,8 @@ class Store extends ActiveRecord
         ];
     }
 
-    public function getPay(){
+    public function getPay()
+    {
         return $this->hasOne(Pay::className(), ['store_id' => 'store_id']);
     }
 }

@@ -12,7 +12,8 @@ use yii\rest\Action;
 
 class SearchAction extends Action
 {
-    public function run(){
+    public function run()
+    {
         /* @var $modelClass ActiveRecord */
         $modelClass = $this->modelClass;
         /* @var $query ActiveQuery */
