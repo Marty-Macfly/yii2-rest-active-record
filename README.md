@@ -87,7 +87,7 @@ public function actions(){
         'update-all' => [
             'class' => 'pavle\yii2\rest\UpdateAllAction'
         ],
-        'update-all-count' => [
+        'count' => [
             'class' => 'pavle\yii2\rest\CountAction'
         ]
     ]);
@@ -105,7 +105,7 @@ public function actions(){
                 'pavle\yii2\rest\test\Fans' => [
                     'lists' => 'http://baseapi.chexiu-local.cn/fans/lists',
                     'create' => 'http://baseapi.chexiu-local.cn/fans/create',
-                    'update' => 'http://baseapi.chexiu-local.cn/fans/update',
+                    'update' => 'http://baseapi.chexiu-local.cn/fans/update-all',
                     'count' => 'http://baseapi.chexiu-local.cn/fans/count',
                 ],
                 'pavle\yii2\rest\test\Store' => [
