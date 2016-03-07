@@ -14,12 +14,15 @@ use yii\rest\Action;
 
 class CountAction extends Action
 {
+    use QueryOrderTrait;
+
     public function run()
     {
         /* @var $modelClass ActiveRecord */
         $modelClass = $this->modelClass;
         /* @var $query ActiveQuery */
         $query = \Yii::configure($modelClass::find(), \Yii::$app->request->queryParams);
+        $query->orderBy = $this->formatOrder($query->orderBy);
 
         return $query->count();
     }

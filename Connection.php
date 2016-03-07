@@ -62,7 +62,7 @@ class Connection extends Component
      */
     public function lists(ActiveQuery $query)
     {
-        return $this->curl->get($this->getUrl($query->modelClass, 'lists'), ['where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset]);
+        return $this->curl->get($this->getUrl($query->modelClass, 'lists'), ['where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset, 'orderBy' => $query->orderBy]);
     }
 
     /**
@@ -73,7 +73,7 @@ class Connection extends Component
      */
     public function count(ActiveQuery $query)
     {
-        return $this->curl->get($this->getUrl($query->modelClass, 'count'), ['where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset]);
+        return $this->curl->get($this->getUrl($query->modelClass, 'count'), ['where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset, 'orderBy' => $query->orderBy]);
     }
 
     /**
