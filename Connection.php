@@ -10,7 +10,7 @@ namespace pavle\yii2\rest;
 
 use Curl\Curl;
 use yii\base\Component;
-use yii\base\ErrorException;
+use yii\base\Event;
 use yii\helpers\ArrayHelper;
 
 class Connection extends Component
@@ -30,29 +30,21 @@ class Connection extends Component
      */
     protected $curl;
 
-    /**
-     * @var callable
-     */
-    public $success;
-
-    /**
-     * @var callable
-     */
-    public $error;
+    const EVENT_CURL_SUCCESS = 'curlSuccess';
+    const EVENT_CURL_ERROR = 'curlError';
 
     public function init()
     {
         parent::init();
         $this->curl = new Curl();
-        !$this->success && $this->success = function (Curl $curl) {
-            $curl->response = ArrayHelper::toArray($curl->response);
-        };
-        !$this->error && $this->error = function (Curl $curl) {
-            \Yii::trace(serialize($curl->response), 'rest.connect');
-            throw new ErrorException($curl->errorMessage);
-        };
-        $this->curl->success($this->success);
-        $this->curl->error($this->error);
+        $this->curl->success(function(Curl $curl){
+            $event = new CurlEvent(['curl' => $curl]);
+            Connection::trigger('curlSuccess', $event);
+        });
+        $this->curl->error(function(Curl $curl){
+            $event = new CurlEvent(['curl' => $curl]);
+            Connection::trigger('curlError', $event);
+        });
     }
 
 
