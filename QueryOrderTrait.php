@@ -8,15 +8,19 @@
 namespace pavle\yii2\rest;
 
 
-trait QueryOrderTrait
+trait RequestQueryTrait
 {
     /**
      * 格式化orders数组，来使用查询
      * @param array $orders
      * @return array
      */
-    public function formatOrder(array $orders)
+    public function formatOrder($orders)
     {
+        if ($orders === null) {
+            return $orders;
+        }
+
         $data = [];
         foreach ($orders as $key => $value) {
             $data[$key] = (int)$value;

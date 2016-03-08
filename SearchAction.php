@@ -12,7 +12,7 @@ use yii\rest\Action;
 
 class SearchAction extends Action
 {
-    use QueryOrderTrait;
+    use RequestQueryTrait;
 
     public function run()
     {
