@@ -14,7 +14,7 @@ use yii\rest\Action;
 
 class CountAction extends Action
 {
-    use QueryOrderTrait;
+    use RequestQueryTrait;
 
     public function run()
     {
