@@ -151,6 +151,7 @@ $model = Fans::find()->with('store.pay')->one();
 $model->wx_name = 'test';
 $model->save();
 ```
+也可以使用ActiveForm、ListView、GridView物件了。
 
 5、行为例子：
 
