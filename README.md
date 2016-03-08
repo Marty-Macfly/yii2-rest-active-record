@@ -28,8 +28,22 @@ php composer.phar require --prefer-dist pavle/yii2-rest-active "*"
 1、继承pavle\yii2\rest\ActiveRecord，添加attributes
 
 ```php
+/**
+ * 注意：一定要写这个来让IDE给你提示
+ *
+ * @property $fans_id
+ * @property $store_id
+ * @property $open_id
+ * @property $member_name
+ * @property $wx_name
+ * @property $gender
+ * @property $language
+ */
 class Fans extends ActiveRecord
 {
+    /**
+     * 注意：一定要复写返回可访问的数据
+     */
     public function attributes()
     {
         return [
@@ -61,6 +75,9 @@ class Fans extends ActiveRecord
         ];
     }
 
+    /**
+     * 注意：一定要复写返回一个唯一ID
+     */
     public static function primaryKey()
     {
         return ['fans_id'];
@@ -121,6 +138,7 @@ public function actions(){
                     'count' => 'http://baseapi.chexiu-local.cn/pay/count',
                 ],
             ],
+            'as rest' => RestResponseBehavior::className() //这里可以使用行为来处理接口数据
         ]
     ],
     ...
@@ -132,4 +150,48 @@ public function actions(){
 $model = Fans::find()->with('store.pay')->one();
 $model->wx_name = 'test';
 $model->save();
+```
+
+5、行为例子：
+
+```php
+class RestResponseBehavior extends Behavior
+{
+    public function events()
+    {
+        return [
+            Connection::EVENT_CURL_SUCCESS => 'success',
+            Connection::EVENT_CURL_ERROR => 'error'
+        ];
+    }
+
+    /**
+     * @param CurlEvent $event
+     * @throws BusinessException
+     */
+    public function success(CurlEvent $event)
+    {
+        /* @var $curl Curl */
+        $curl = $event->curl;
+        $result = ArrayHelper::toArray($curl->response);
+        if (ArrayHelper::getValue($result, 'code') != 0) {
+            throw new BusinessException(ArrayHelper::getValue($result, 'message'));
+        }
+
+        $data = ArrayHelper::getValue($curl->response, 'data');
+        $curl->response = $data;
+    }
+
+    /**
+     * @param CurlEvent $event
+     * @throws ErrorException
+     */
+    public function error(CurlEvent $event)
+    {
+        /* @var $curl Curl */
+        $curl = $event->curl;
+        \Yii::trace(serialize($curl->response), 'rest.connect');
+        throw new ErrorException($curl->errorMessage);
+    }
+}
 ```
