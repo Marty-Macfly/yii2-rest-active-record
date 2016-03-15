@@ -101,8 +101,14 @@ public function actions(){
         'lists' => [
             'class' => 'pavle\yii2\rest\SearchAction'
         ],
-        'update-all' => [
-            'class' => 'pavle\yii2\rest\UpdateAllAction'
+        'create' => [
+            'class' => 'yii2\rest\CreateAction'
+        ],
+        'update' => [
+            'class' => 'yii2\rest\UpdateAction'
+        ],
+        'delete' => [
+            'class' => 'yii2\rest\DeleteAction'
         ],
         'count' => [
             'class' => 'pavle\yii2\rest\CountAction'
