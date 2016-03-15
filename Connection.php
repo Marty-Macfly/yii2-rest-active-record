@@ -81,18 +81,22 @@ class Connection extends Component
     }
 
     /**
+     * @param $id
      * @param $attributes
-     * @param $condition
-     * @return integer
+     * @return int
      */
-    public function updateAll($attributes, $condition)
+    public function update($id, $attributes)
     {
-        return $this->curl->put($this->getUrl($this->modelClass, 'update') . '?' . http_build_query($condition), $attributes);
+        return $this->curl->put($this->getUrl($this->modelClass, 'update') . '?' . http_build_query(['id' => $id]), $attributes);
     }
 
-    public function deleteAll($condition, $params)
+    /**
+     * @param $id
+     * @return string
+     */
+    public function delete($id)
     {
-        return $this->curl->delete($this->getUrl($this->modelClass, 'delete'), $condition);
+        return $this->curl->delete($this->getUrl($this->modelClass, 'delete'), ['id' => $id]);
     }
 
     /**
