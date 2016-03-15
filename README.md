@@ -122,20 +122,23 @@ public function actions(){
                 'pavle\yii2\rest\test\Fans' => [
                     'lists' => 'http://baseapi.chexiu-local.cn/fans/lists',
                     'create' => 'http://baseapi.chexiu-local.cn/fans/create',
-                    'update' => 'http://baseapi.chexiu-local.cn/fans/update-all',
+                    'update' => 'http://baseapi.chexiu-local.cn/fans/update',
                     'count' => 'http://baseapi.chexiu-local.cn/fans/count',
+                    'delete' => 'http://baseapi.chexiu-local.cn/fans/delete',
                 ],
                 'pavle\yii2\rest\test\Store' => [
                     'lists' => 'http://baseapi.chexiu-local.cn/store/lists',
                     'create' => 'http://baseapi.chexiu-local.cn/store/create',
                     'update' => 'http://baseapi.chexiu-local.cn/store/update',
                     'count' => 'http://baseapi.chexiu-local.cn/store/count',
+                    'delete' => 'http://baseapi.chexiu-local.cn/fans/delete',
                 ],
                 'pavle\yii2\rest\test\Pay' => [
                     'lists' => 'http://baseapi.chexiu-local.cn/pay/lists',
                     'create' => 'http://baseapi.chexiu-local.cn/pay/create',
                     'update' => 'http://baseapi.chexiu-local.cn/pay/update',
                     'count' => 'http://baseapi.chexiu-local.cn/pay/count',
+                    'delete' => 'http://baseapi.chexiu-local.cn/fans/delete',
                 ],
             ],
             'as rest' => RestResponseBehavior::className() //这里可以使用行为来处理接口数据
