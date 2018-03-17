@@ -7,7 +7,6 @@
 
 namespace pavle\yii2\rest;
 
-
 use yii\rest\Action;
 
 class SearchAction extends Action

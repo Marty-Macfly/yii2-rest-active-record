@@ -1,35 +1,71 @@
 Rest Active Record
 ==================
-一个基于restful api模型资源的ActiveRecord方案
 
-安装
+[Active Record](http://www.yiiframework.com/doc-2.0/guide-db-active-record.html) interface for accessing and manipulating data stored on remote ressource throug a RESTful API.
+
+INSTALLATION
 ------------
 
-安装此扩展的首选方式是通过 [composer](http://getcomposer.org/download/).
+The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
 
-任一运行
+Either run
 
 ```
 php composer.phar require --prefer-dist pavle/yii2-rest-active-record "*"
 ```
 
-或者添加
+or add
 
 ```
 "pavle/yii2-rest-active": "*"
 ```
 
-到您的 `composer.json` 文件.
+to the require section of your `composer.json` file.
 
+COMPATIBILITY CHANGE SINCE VERSION 1.0.5
+------------
 
-用法
+* Switch from [php-curl-class/php-curl-class](https://github.com/php-curl-class/php-curl-class) to [yiisoft/yii2-httpclient](https://github.com/yiisoft/yii2-httpclient/)
+  * Class CurlEvent replace by ResponseEvent
+    * EVENT_CURL_SUCCESS by EVENT_RESPONSE_SUCCESS
+    * EVENT_CURL_ERROR by EVENT_RESPONSE_ERROR
+
+Yii framework (server) providing the Rest API side
 -----
 
-1、继承pavle\yii2\rest\ActiveRecord，添加attributes
+Install the module `avle/yii2-rest-active` and be sure your controller define the following actions:
+
+```php
+public function actions(){
+    return ArrayHelper::merge(parent::actions(), [
+        'lists' => [
+            'class' => 'pavle\yii2\rest\SearchAction' // Action to add
+        ],
+        'create' => [
+            'class' => 'yii2\rest\CreateAction'
+        ],
+        'update' => [
+            'class' => 'yii2\rest\UpdateAction'
+        ],
+        'delete' => [
+            'class' => 'yii2\rest\DeleteAction'
+        ],
+        'count' => [
+            'class' => 'pavle\yii2\rest\CountAction' // Action to add
+        ]
+    ]);
+}
+```
+
+Yii framework (client) consuming the REST API and using the Rest ActiveRecord Model
+-----
+
+Install the module `avle/yii2-rest-active` 
+
+1. Create your ActiveRecord Model, `pavle\yii2\rest\ActiveRecord::attributes`
 
 ```php
 /**
- * 注意：一定要写这个来让IDE给你提示
  *
  * @property $fans_id
  * @property $store_id
@@ -42,7 +78,7 @@ php composer.phar require --prefer-dist pavle/yii2-rest-active-record "*"
 class Fans extends ActiveRecord
 {
     /**
-     * 注意：一定要复写返回可访问的数据
+     * ActiveRecord attributes list
      */
     public function attributes()
     {
@@ -76,7 +112,7 @@ class Fans extends ActiveRecord
     }
 
     /**
-     * 注意：一定要复写返回一个唯一ID
+     * Define the ActiveRecord primary key
      */
     public static function primaryKey()
     {
@@ -93,31 +129,7 @@ class Fans extends ActiveRecord
 }
 ```
 
-2、配置rest接口
-
-```php
-public function actions(){
-    return ArrayHelper::merge(parent::actions(), [
-        'lists' => [
-            'class' => 'pavle\yii2\rest\SearchAction'
-        ],
-        'create' => [
-            'class' => 'yii2\rest\CreateAction'
-        ],
-        'update' => [
-            'class' => 'yii2\rest\UpdateAction'
-        ],
-        'delete' => [
-            'class' => 'yii2\rest\DeleteAction'
-        ],
-        'count' => [
-            'class' => 'pavle\yii2\rest\CountAction'
-        ]
-    ]);
-}
-```
-
-3、reset api配置完，在原项目配置config/web.php
+2、Define API endppont for the compoenent in `config/web.php`.
 
 ```php
     ...
@@ -147,61 +159,17 @@ public function actions(){
                     'delete' => 'http://baseapi.xxxxxx.cn/fans/delete',
                 ],
             ],
-            'as rest' => RestResponseBehavior::className() //这里可以使用行为来处理接口数据
         ]
     ],
     ...
 ```
 
-4、然后就可以像db的ActiveRecord一样调用了
+3. Use your ActiveRecord to do what you want `db\ActiveRecord'.
 
 ```php
 $model = Fans::find()->with('store.pay')->one();
 $model->wx_name = 'test';
 $model->save();
 ```
-也可以使用ActiveForm、ListView、GridView物件了。
 
-5、行为例子：
-
-```php
-class RestResponseBehavior extends Behavior
-{
-    public function events()
-    {
-        return [
-            Connection::EVENT_CURL_SUCCESS => 'success',
-            Connection::EVENT_CURL_ERROR => 'error'
-        ];
-    }
-
-    /**
-     * @param CurlEvent $event
-     * @throws BusinessException
-     */
-    public function success(CurlEvent $event)
-    {
-        /* @var $curl Curl */
-        $curl = $event->curl;
-        $result = ArrayHelper::toArray($curl->response);
-        if (ArrayHelper::getValue($result, 'code') != 0) {
-            throw new BusinessException(ArrayHelper::getValue($result, 'message'));
-        }
-
-        $data = ArrayHelper::getValue($curl->response, 'data');
-        $curl->response = $data;
-    }
-
-    /**
-     * @param CurlEvent $event
-     * @throws ErrorException
-     */
-    public function error(CurlEvent $event)
-    {
-        /* @var $curl Curl */
-        $curl = $event->curl;
-        \Yii::trace(serialize($curl->response), 'rest.connect');
-        throw new ErrorException($curl->errorMessage);
-    }
-}
-```
+You can use with ActiveForm、ListView、GridView, ..

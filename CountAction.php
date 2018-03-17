@@ -7,7 +7,6 @@
 
 namespace pavle\yii2\rest;
 
-
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\rest\Action;

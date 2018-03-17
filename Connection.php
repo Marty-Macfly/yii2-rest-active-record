@@ -1,19 +1,13 @@
 <?php
-/**
- * User: 李鹏飞 <523260513@qq.com>
- * Date: 2016/3/2
- * Time: 19:01
- */
 
 namespace pavle\yii2\rest;
 
-
-use Curl\Curl;
-use yii\base\Component;
-use yii\base\Event;
+use Yii;
+use yii\base\InvalidArgumentException;
+use yii\httpclient\Client;
 use yii\helpers\ArrayHelper;
 
-class Connection extends Component
+class Connection extends Client
 {
     /**
      * @var array
@@ -26,27 +20,30 @@ class Connection extends Component
     public $modelClass;
 
     /**
-     * @var Curl
+     * @event ResponseEvent an event raised right after getting succeful response.
      */
-    protected $curl;
+    const EVENT_RESPONSE_SUCCESS = 'responseSuccess';
+    /**
+     * @event ResponseEvent an event raised right after getting error response.
+     */
+    const EVENT_RESPONSE_ERROR = 'responseError';
 
-    const EVENT_CURL_SUCCESS = 'curlSuccess';
-    const EVENT_CURL_ERROR = 'curlError';
-
-    public function init()
+    /**
+     * @inheritdoc
+     */
+    public function afterSend($request, $response)
     {
-        parent::init();
-        $this->curl = new Curl();
-        $this->curl->success(function(Curl $curl){
-            $event = new CurlEvent(['curl' => $curl]);
-            Connection::trigger('curlSuccess', $event);
-        });
-        $this->curl->error(function(Curl $curl){
-            $event = new CurlEvent(['curl' => $curl]);
-            Connection::trigger('curlError', $event);
-        });
-    }
+        parent::afterSend($request, $response);
 
+        $event = new ResponseEvent();
+        $event->response = $response;
+
+        if ($response->isOk) {
+            $this->trigger(self::EVENT_RESPONSE_SUCCESS, $event);
+        } else {
+            $this->trigger(self::EVENT_RESPONSE_ERROR, $event);
+        }
+    }
 
     /**
      * @param ActiveQuery $query
@@ -54,7 +51,7 @@ class Connection extends Component
      */
     public function lists(ActiveQuery $query)
     {
-        return $this->curl->get($this->getUrl($query->modelClass, 'lists'), ['where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset, 'orderBy' => $query->orderBy]);
+        return $this->modelClass::getDb()->get([$this->getUrl($query->modelClass, 'lists'), 'where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset, 'orderBy' => $query->orderBy])->send()->data;
     }
 
     /**
@@ -65,7 +62,7 @@ class Connection extends Component
      */
     public function count(ActiveQuery $query)
     {
-        return $this->curl->get($this->getUrl($query->modelClass, 'count'), ['where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset, 'orderBy' => $query->orderBy]);
+        return $this->modelClass::getDb()->get([$this->getUrl($query->modelClass, 'count'), 'where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset, 'orderBy' => $query->orderBy])->send()->data;
     }
 
     /**
@@ -76,8 +73,8 @@ class Connection extends Component
      */
     public function exists(ActiveQuery $query)
     {
-        $result = $this->curl->get($this->getUrl($query->modelClass, 'count'), ['where' => $query->where]);
-        return $result ? true : false;
+        $result = $this->modelClass::getDb()->get([$this->getUrl($query->modelClass, 'count'), 'where' => $query->where])->send();
+        return $result->isOk;
     }
 
     /**
@@ -87,7 +84,7 @@ class Connection extends Component
      */
     public function update($id, $attributes)
     {
-        return $this->curl->put($this->getUrl($this->modelClass, 'update') . '?' . http_build_query(['id' => $id]), $attributes);
+        return $this->modelClass::getDb()->put([$this->getUrl($this->modelClass, 'update'), 'id' => $id], $attributes)->send()->data;
     }
 
     /**
@@ -96,7 +93,7 @@ class Connection extends Component
      */
     public function delete($id)
     {
-        return $this->curl->delete($this->getUrl($this->modelClass, 'delete'), ['id' => $id]);
+        return $this->modelClass::getDb()->delete([$this->getUrl($this->modelClass, 'delete'), 'id' => $id])->send()->data;
     }
 
     /**
@@ -105,7 +102,7 @@ class Connection extends Component
      */
     public function create($attributes)
     {
-        return $this->curl->post($this->getUrl($this->modelClass, 'create'), $attributes);
+        return $this->modelClass::getDb()->post($this->getUrl($this->modelClass, 'create'), $attributes)->send()->data;
     }
 
     /**
@@ -125,6 +122,6 @@ class Connection extends Component
      */
     public function updateAllCounters($counters, $condition)
     {
-        return $this->curl->put($this->getUrl($this->modelClass, 'update') . '?' . http_build_query($condition), $counters);
+        return $this->modelClass::getDb()->put([$this->getUrl($this->modelClass, 'update'), $condition], $counters);
     }
 }
