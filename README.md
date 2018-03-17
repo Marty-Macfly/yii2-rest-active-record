@@ -33,7 +33,7 @@ COMPATIBILITY CHANGE SINCE VERSION 1.0.5
 Yii framework (server) providing the Rest API side
 -----
 
-Install the module `avle/yii2-rest-active` and be sure your controller define the following actions:
+Install the module `pavle/yii2-rest-active` and be sure your controller define the following actions:
 
 ```php
 public function actions(){
@@ -60,7 +60,7 @@ public function actions(){
 Yii framework (client) consuming the REST API and using the Rest ActiveRecord Model
 -----
 
-Install the module `avle/yii2-rest-active` 
+Install the module `pavle/yii2-rest-active`
 
 1. Create your ActiveRecord Model, `pavle\yii2\rest\ActiveRecord::attributes`
 
