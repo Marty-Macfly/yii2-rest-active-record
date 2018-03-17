@@ -65,4 +65,9 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 
+# Composer file
+composer.lock
+vendor/
+
+
 # Created by .ignore support plugin (hsz.mobi)
