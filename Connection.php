@@ -12,7 +12,7 @@ class Connection extends Client
     /**
      * @var array
      */
-    public $map;
+    public $map = [];
 
     /**
      * @var string
@@ -112,7 +112,7 @@ class Connection extends Client
      */
     protected function getUrl($modelClass, $operate)
     {
-        return ArrayHelper::getValue($this->map, $modelClass . '.' . $operate);
+        return ArrayHelper::getValue(ArrayHelper::merge($modelClass::$map, ArrayHelper::getValue($this->map, $modelClass, [])), $operate);
     }
 
     /**

@@ -23,6 +23,11 @@ use yii\db\StaleObjectException;
 class ActiveRecord extends BaseActiveRecord
 {
     /**
+     * @var array
+     */
+    public static $map = [];
+
+    /**
      * @var Connection
      */
     protected $connect;
@@ -30,7 +35,7 @@ class ActiveRecord extends BaseActiveRecord
     public function init()
     {
         parent::init();
-        $this->connect = self::getDb();
+        $this->connect = $this->getDb();
     }
 
 

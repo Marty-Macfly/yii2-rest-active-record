@@ -84,6 +84,15 @@ Install the module `pavle/yii2-rest-active`
  */
 class Fans extends ActiveRecord
 {
+    // Endpoint mapping can be done directly in the ActiveRecord model and/or in the Connection component.
+    public static $map = [
+        'lists' => 'http://baseapi.xxxxxx.cn/fans/lists',
+        'create' => 'http://baseapi.xxxxxx.cn/fans/create',
+        'update' => 'http://baseapi.xxxxxx.cn/fans/update',
+        'count' => 'http://baseapi.xxxxxx.cn/fans/count',
+        'delete' => 'http://baseapi.xxxxxx.cn/fans/delete',
+    ];
+
     /**
      * ActiveRecord attributes list
      */
@@ -136,7 +145,7 @@ class Fans extends ActiveRecord
 }
 ```
 
-2、Define API endppont for the compoenent in `config/web.php`.
+2、Define API endpoint for the compoenent in `config/web.php`, you can also define the endpoint directly in the model see previous model
 
 ```php
     ...
@@ -144,13 +153,15 @@ class Fans extends ActiveRecord
         'rest' => [
             'class' => 'pavle\yii2\rest\Connection',
             'map' => [
-                'pavle\yii2\rest\test\Fans' => [
+                /*
+                'pavle\yii2\rest\test\Fans' => [ // just enalbe that to override the mapping define in the ActiveRecord model Fans.
                     'lists' => 'http://baseapi.xxxxxx.cn/fans/lists',
                     'create' => 'http://baseapi.xxxxxx.cn/fans/create',
                     'update' => 'http://baseapi.xxxxxx.cn/fans/update',
                     'count' => 'http://baseapi.xxxxxx.cn/fans/count',
                     'delete' => 'http://baseapi.xxxxxx.cn/fans/delete',
                 ],
+                */
                 'pavle\yii2\rest\test\Store' => [
                     'lists' => 'http://baseapi.xxxxxx.cn/store/lists',
                     'create' => 'http://baseapi.xxxxxx.cn/store/create',
