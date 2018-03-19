@@ -36,6 +36,7 @@ COMPATIBILITY CHANGE SINCE VERSION 1.0.5
     * `create` => `_create`
     * `update` => `_update`
     * `delete` => `_delete`
+  * REST Controller mapping can be done in component or in ActiveRecord
 
 Yii framework (server) providing the Rest API side
 -----
