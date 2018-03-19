@@ -1,6 +1,7 @@
 <?php
 
 namespace pavle\yii2\rest;
+
 use yii\base\Component;
 use yii\db\ActiveQueryInterface;
 use yii\db\ActiveQueryTrait;
@@ -42,7 +43,7 @@ class ActiveQuery extends Component implements ActiveQueryInterface
      */
     public function all($db = null)
     {
-        $rows = $this->connect->lists($this);
+        $rows = $this->connect->_lists($this);
         return $this->populate($rows);
     }
 
@@ -57,7 +58,7 @@ class ActiveQuery extends Component implements ActiveQueryInterface
     public function one($db = null)
     {
         $this->limit = 1;
-        $rows = $this->connect->lists($this);
+        $rows = $this->connect->_lists($this);
         return reset($this->populate($rows));
     }
 
@@ -70,7 +71,7 @@ class ActiveQuery extends Component implements ActiveQueryInterface
      */
     public function count($q = '*', $db = null)
     {
-        return $this->connect->count($this);
+        return $this->connect->_count($this);
     }
 
     /**
@@ -81,7 +82,7 @@ class ActiveQuery extends Component implements ActiveQueryInterface
      */
     public function exists($db = null)
     {
-        return $this->connect->exists($this);
+        return $this->connect->_exists($this);
     }
 
     /**

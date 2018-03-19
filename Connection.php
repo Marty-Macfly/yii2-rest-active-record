@@ -49,7 +49,7 @@ class Connection extends Client
      * @param ActiveQuery $query
      * @return mixed
      */
-    public function lists(ActiveQuery $query)
+    public function _lists(ActiveQuery $query)
     {
         return $this->modelClass::getDb()->get([$this->getUrl($query->modelClass, 'lists'), 'where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset, 'orderBy' => $query->orderBy])->send()->data;
     }
@@ -60,7 +60,7 @@ class Connection extends Client
      * @param ActiveQuery $query
      * @return int number of records.
      */
-    public function count(ActiveQuery $query)
+    public function _count(ActiveQuery $query)
     {
         return $this->modelClass::getDb()->get([$this->getUrl($query->modelClass, 'count'), 'where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset, 'orderBy' => $query->orderBy])->send()->data;
     }
@@ -71,7 +71,7 @@ class Connection extends Client
      * @param ActiveQuery $query
      * @return bool whether the query result contains any row of data.
      */
-    public function exists(ActiveQuery $query)
+    public function _exists(ActiveQuery $query)
     {
         $result = $this->modelClass::getDb()->get([$this->getUrl($query->modelClass, 'count'), 'where' => $query->where])->send();
         return $result->isOk;
@@ -82,7 +82,7 @@ class Connection extends Client
      * @param $attributes
      * @return int
      */
-    public function update($id, $attributes)
+    public function _update($id, $attributes)
     {
         return $this->modelClass::getDb()->put([$this->getUrl($this->modelClass, 'update'), 'id' => $id], $attributes)->send()->data;
     }
@@ -91,7 +91,7 @@ class Connection extends Client
      * @param $id
      * @return string
      */
-    public function delete($id)
+    public function _delete($id)
     {
         return $this->modelClass::getDb()->delete([$this->getUrl($this->modelClass, 'delete'), 'id' => $id])->send()->data;
     }
@@ -100,7 +100,7 @@ class Connection extends Client
      * @param $attributes
      * @return mixed
      */
-    public function create($attributes)
+    public function _create($attributes)
     {
         return $this->modelClass::getDb()->post($this->getUrl($this->modelClass, 'create'), $attributes)->send()->data;
     }

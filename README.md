@@ -29,6 +29,13 @@ COMPATIBILITY CHANGE SINCE VERSION 1.0.5
   * Class CurlEvent replace by ResponseEvent
     * EVENT_CURL_SUCCESS by EVENT_RESPONSE_SUCCESS
     * EVENT_CURL_ERROR by EVENT_RESPONSE_ERROR
+  * Change name of properties in `connection` component to avoid conflict with [yii2-httpclient](https://github.com/yiisoft/yii2-httpclient/):
+    * `lists` => `_lists`
+    * `exists` => `_exists`
+    * `count` => `_count`
+    * `create` => `_create`
+    * `update` => `_update`
+    * `delete` => `_delete`
 
 Yii framework (server) providing the Rest API side
 -----

@@ -139,7 +139,7 @@ class ActiveRecord extends BaseActiveRecord
         }
 
         $values = $this->getDirtyAttributes($attributes);
-        if (($data = $this->connect->create($values)) === false) {
+        if (($data = $this->connect->_create($values)) === false) {
             return false;
         }
 
