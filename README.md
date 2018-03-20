@@ -29,14 +29,14 @@ COMPATIBILITY CHANGE SINCE VERSION 1.0.5
   * Class CurlEvent replace by ResponseEvent
     * EVENT_CURL_SUCCESS by EVENT_RESPONSE_SUCCESS
     * EVENT_CURL_ERROR by EVENT_RESPONSE_ERROR
-  * Change name of properties in `connection` component to avoid conflict with [yii2-httpclient](https://github.com/yiisoft/yii2-httpclient/):
+  * Move and change name of methods in `connection` component to ActiveRecord (so it can be modify on an ActiveRecord bases if the logic need to be changed):
     * `lists` => `_lists`
     * `exists` => `_exists`
     * `count` => `_count`
     * `create` => `_create`
     * `update` => `_update`
     * `delete` => `_delete`
-  * REST Controller mapping can be done in component or in ActiveRecord
+  * REST Controller mapping can be done in component or in ActiveRecord.
 
 Yii framework (server) providing the Rest API side
 -----

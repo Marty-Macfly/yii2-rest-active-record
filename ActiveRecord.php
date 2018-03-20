@@ -12,6 +12,7 @@ use yii\base\Exception;
 use yii\base\NotSupportedException;
 use yii\db\BaseActiveRecord;
 use yii\db\StaleObjectException;
+use yii\helpers\ArrayHelper;
 
 /**
  * Class ActiveRecord
@@ -28,18 +29,6 @@ class ActiveRecord extends BaseActiveRecord
     public static $map = [];
 
     /**
-     * @var Connection
-     */
-    protected $connect;
-
-    public function init()
-    {
-        parent::init();
-        $this->connect = $this->getDb();
-    }
-
-
-    /**
      * Returns the primary key **name(s)** for this AR class.
      *
      * Note that an array should be returned even when the record only has a single primary key.
@@ -51,6 +40,76 @@ class ActiveRecord extends BaseActiveRecord
     public static function primaryKey()
     {
         return ['id'];
+    }
+
+    /**
+     * @param ActiveQuery $query
+     * @return mixed
+     */
+    public static function _lists(ActiveQuery $query)
+    {
+        return static::getDb()->get([static::getUrl($query->modelClass, 'lists'), 'where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset, 'orderBy' => $query->orderBy])->send()->data;
+    }
+
+    /**
+     * Returns the number of records.
+     * If this parameter is not given, the `db` application component will be used.
+     * @param ActiveQuery $query
+     * @return int number of records.
+     */
+    public static function _count(ActiveQuery $query)
+    {
+        return static::getDb()->get([static::getUrl($query->modelClass, 'count'), 'where' => $query->where, 'limit' => $query->limit, 'offset' => $query->offset, 'orderBy' => $query->orderBy])->send()->data;
+    }
+
+    /**
+     * Returns a value indicating whether the query result contains any row of data.
+     * If this parameter is not given, the `db` application component will be used.
+     * @param ActiveQuery $query
+     * @return bool whether the query result contains any row of data.
+     */
+    public static function _exists(ActiveQuery $query)
+    {
+        $result = static::getDb()->get([static::getUrl($query->modelClass, 'count'), 'where' => $query->where])->send();
+        return $result->isOk;
+    }
+
+    /**
+     * @param $id
+     * @param $attributes
+     * @return int
+     */
+    public static function _update($id, $attributes)
+    {
+        return static::getDb()->put([static::getUrl(get_called_class(), 'update'), 'id' => $id], $attributes)->send()->data;
+    }
+
+    /**
+     * @param $id
+     * @return string
+     */
+    public static function _delete($id)
+    {
+        return static::getDb()->delete([static::getUrl(get_called_class(), 'delete'), 'id' => $id])->send()->data;
+    }
+
+    /**
+     * @param $attributes
+     * @return mixed
+     */
+    public static function _create($attributes)
+    {
+        return static::getDb()->post(static::getUrl(get_called_class(), 'create'), $attributes)->send()->data;
+    }
+
+    /**
+     * @param $modelClass
+     * @param $operate
+     * @return mixed
+     */
+    protected static function getUrl($modelClass, $operate)
+    {
+        return ArrayHelper::getValue(ArrayHelper::merge($modelClass::$map, ArrayHelper::getValue(static::getDb()->map, $modelClass, [])), $operate);
     }
 
     /**
@@ -144,7 +203,7 @@ class ActiveRecord extends BaseActiveRecord
         }
 
         $values = $this->getDirtyAttributes($attributes);
-        if (($data = $this->connect->_create($values)) === false) {
+        if (($data = static::_create($values)) === false) {
             return false;
         }
 
@@ -166,11 +225,15 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function getDb()
     {
-        /* @var $rest Connection */
-        $rest = Yii::$app->get('rest');
-        $rest->modelClass = get_called_class();
+        return Yii::$app->get('rest');
+    }
 
-        return $rest;
+    public static function getmodelClass()
+    {
+        if (static::$modelClass == null) {
+            static::$modelClass = get_called_class();
+        }
+        return static::$modelClass;
     }
 
     /**
@@ -181,10 +244,11 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function updateAll($attributes, $condition = '')
     {
-        $primary = reset(static::primaryKey());
+        $primary = static::primaryKey();
+        $primary = reset($primary);
         if (is_array($condition) && isset($condition[$primary])) {
             $primary = $condition[$primary];
-            return static::getDb()->update($primary, $attributes);
+            return static::_update($primary, $attributes);
         } else {
             throw new NotSupportedException(__METHOD__ . ' is only supported for model instance.');
         }
@@ -212,7 +276,7 @@ class ActiveRecord extends BaseActiveRecord
         $primary = reset(static::primaryKey());
         if (is_array($condition) && isset($condition[$primary])) {
             $primary = $condition[$primary];
-            return static::getDb()->delete($primary);
+            return static::_delete($primary);
         } else {
             throw new NotSupportedException(__METHOD__ . ' is only supported for model instance.');
         }
