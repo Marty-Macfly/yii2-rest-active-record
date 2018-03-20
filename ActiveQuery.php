@@ -18,11 +18,6 @@ class ActiveQuery extends Component implements ActiveQueryInterface
     use ActiveRelationTrait;
 
     /**
-     * @var \pavle\yii2\rest\Connection
-     */
-    protected $connect;
-
-    /**
      * Constructor.
      * @param string $modelClass the model class associated with this query
      * @param array $config configurations to be applied to the newly created query object
@@ -32,7 +27,6 @@ class ActiveQuery extends Component implements ActiveQueryInterface
         parent::__construct($config);
         /* @var $modelClass ActiveRecord */
         $this->modelClass = $modelClass;
-        $this->connect = $modelClass::getDb();
     }
 
     /**
@@ -43,7 +37,7 @@ class ActiveQuery extends Component implements ActiveQueryInterface
      */
     public function all($db = null)
     {
-        $rows = $this->connect->_lists($this);
+        $rows = $this->modelClass::_lists($this);
         return $this->populate($rows);
     }
 
@@ -58,8 +52,9 @@ class ActiveQuery extends Component implements ActiveQueryInterface
     public function one($db = null)
     {
         $this->limit = 1;
-        $rows = $this->connect->_lists($this);
-        return reset($this->populate($rows));
+        $rows = $this->modelClass::_lists($this);
+        $rows = $this->populate($rows);
+        return empty($rows) ? null : reset($rows);
     }
 
     /**
@@ -71,7 +66,7 @@ class ActiveQuery extends Component implements ActiveQueryInterface
      */
     public function count($q = '*', $db = null)
     {
-        return $this->connect->_count($this);
+        return $this->modelClass::_count($this);
     }
 
     /**
@@ -82,7 +77,7 @@ class ActiveQuery extends Component implements ActiveQueryInterface
      */
     public function exists($db = null)
     {
-        return $this->connect->_exists($this);
+        return $this->modelClass::_exists($this);
     }
 
     /**
