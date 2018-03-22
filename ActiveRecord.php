@@ -273,7 +273,8 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function deleteAll($condition = '', $params = [])
     {
-        $primary = reset(static::primaryKey());
+        $primary = static::primaryKey();
+        $primary = reset($primary);
         if (is_array($condition) && isset($condition[$primary])) {
             $primary = $condition[$primary];
             return static::_delete($primary);
